@@ -1,1 +1,43 @@
+name: Pushing Image To Docker Hub
+
+on:
+    push:
+        branches: ['main']
+    pull_request:
+        branches: ['main']
+
+jobs:
+    Docker_test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Repo
+              uses: actions/Checkout@v4
+            - name: Login into Docker
+              uses: docker/login-action@v4
+              with:
+                username: ${{ secrets.DOCKERHUB_USERNAME }}
+                password: ${{ secrets.DOCKERHUB_TOKEN }}
+            - name: Build Docker Image
+              run: |
+               docker build -t researchAI .
+            - name: Run Docker Container
+              run: |
+               docker run -d -p 8501:8501 --name AI -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}  researchAI
+                for i in {1..30}; do
+                  if curl -s http://localhost:8501/ > /dev/null 2>&1; then
+                    echo "App is up!"
+                    break
+                  fi
+                  echo "Waiting... attempt $i"
+                  sleep 2
+                done
+                curl http://localhost:8501/ || exit 1
+                docker stop AI 
+                docker rm -f AI || true
+            - name: Push to DockerHub
+              uses: docker/build-push-action@v7
+              with:
+                context:
+                push: true
+                tags: vakeesanm/researchassistantai:latest
 
