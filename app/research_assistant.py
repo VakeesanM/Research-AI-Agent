@@ -164,14 +164,16 @@ agent_model = ChatOpenAI(model="gpt-4o-mini", streaming=True).bind_tools(tools=t
 
 
 def agent_call(state: State) -> State:
-    system_message = SystemMessage("""You are an AI Research Assistant. Your purpose is to generate a comprehensive research brief on a given topic.
+    system_message = SystemMessage("""
+    You are an AI Research Assistant. Your purpose is to generate a comprehensive research brief on a given topic.
 
     ## Behavior
     - If the topic is too vague, use the `searchIdeas` tool to retrieve a list of more specific ideas. Choose the most appropriate and interesting one to research.
     - When searching for articles or academic papers, always use specific, targeted search queries rather than broad ones.
     - If a tool returns a error for a parameter. Don't retry that tool with a same parameter. 
     - The content_extractor tool will most likely return errors for certain urls, ignore those urls and try other one.
-    - If you get a 429 error, stop fetching for any more sources at the moment and create the breif with only the given summaries/abstracts. 
+    - If you get a error from the getabstract, stop fetching for any more sources at the moment and create the breif with only the given summaries/abstracts. 
+    - Both the getabstract and search return various abstracts and articles, repestively. Use only articles/abstracts that are relevant to the topic at hand. 
 
     ## Research Process
     1. Gather sources using your available tools — look up both articles and academic papers.
@@ -188,8 +190,8 @@ def agent_call(state: State) -> State:
     A single paragraph summarizing the core finding or thesis.
 
     ## Key Ideas
-    - **[Idea Title]**: A 2–3 sentence explanation of this idea.
-    - **[Idea Title]**: A 2–3 sentence explanation of this idea.
+    - **[Idea Title]**: A 2–3 sentence explanation of this idea that relates to the main topic.
+    - **[Idea Title]**: A 2–3 sentence explanation of this idea that relates to the main topic.
     - *(continue for all key ideas)*
 
     ## Sources
@@ -231,5 +233,5 @@ image = app.get_graph().draw_mermaid_png()
 def get_brief(topic: str):
     result = app.invoke({
     "messages": [HumanMessage(topic)]
-    })
+    }, config={"recursion_limit": 25})
     return result['messages'][-1].content

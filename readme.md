@@ -38,4 +38,4 @@ streamlit run "app/app.py"
 * The agent struggled with vague topics, returning poor results — adding a Wikipedia search tool allowed it to identify more specific, researchable variations of a topic before proceeding.
 * Early testing revealed the agent was searching topics too literally instead of exploring them in depth. I addressed this by prompting the agent to generate more complex, targeted questions around the topic before beginning its research.
 * Certain websites would block attempts to extact content from them. I fixed this by instructing the Agent to not repeat any urls thats return errors and adding try catch blocks . 
-* 
+* Set Recursion Limit, which reduced run time without causing any serious loss in quality of results. 
