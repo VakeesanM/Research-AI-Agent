@@ -1,0 +1,6 @@
+.venv
+.gitignore
+agent.png
+app\__pycache__
+env
+readme.md

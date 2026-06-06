@@ -1,0 +1,10 @@
+langgraph
+langchain-community
+langchain-openai
+langchain-core
+duckduckgo-search
+arxiv
+python-dotenv
+wikipedia-api
+streamlit
+ 
