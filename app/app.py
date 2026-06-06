@@ -12,7 +12,7 @@ st.write("This is a Demo for automonous ReAct AI Research Assistant. The main pu
 query = st.text_area("Enter the topic you would like to research. Please Be specific. ")
 
 if st.button("Submit"):
-    with st.spinner("Creating Research Brief..."):
+    with st.spinner("Creating Research Brief...(May take up to 2 Minutes in the Worst Case)", show_time=True):
         st.write(get_brief(query))
 
 

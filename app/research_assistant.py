@@ -46,7 +46,21 @@ class State(TypedDict):
 
 @tool
 def search(topic: str):
-    """This fucntion takes in a topic and searchs for relevant websites for that topic. It returns a python dictonary of websites and their urls."""
+    """
+    Search the web for sources relevant to a given research topic.
+
+    Use this tool when you need to discover websites, articles, or pages related
+    to a topic. Returns a dictionary mapping source titles to their URLs.
+
+    Args:
+        topic (str): The research topic or query to search for.
+
+    Returns:
+        dict[str, str]: A dictionary where keys are source titles and values are URLs.
+
+    Example:
+        {"MIT Technology Review": "https://www.technologyreview.com/..."}
+    """
     urls = {}
     with DDGS() as ddgs:
         results = ddgs.text(topic, max_results=5)
@@ -55,7 +69,18 @@ def search(topic: str):
     return urls
 @tool
 def content_extractor(url: str):
-    """This function extracts the content of the page found at given url and returns a document containing the url's contents"""
+    """
+    Fetch and extract the full text content from a given URL.
+
+    Use this tool when you have a URL and need to read the actual contents of the
+    page. Returns a document object containing the extracted text.
+
+    Args:
+        url (str): The full URL of the webpage to extract content from.
+
+    Returns:
+        Document: A document object containing the page's extracted text content.
+    """
     content = WebBaseLoader(url).load()
     pages = ""
     for doc in content:
@@ -64,35 +89,74 @@ def content_extractor(url: str):
 
 @tool
 def summarizer(document: str):
-    """This function takes in a document and returns a summary of the document"""
-    return summary_chain.invoke({"content": document})
+    """
+    Summarize the key information from a document.
+
+    Use this tool after extracting page content when you need a concise overview
+    rather than the full text. Useful for processing multiple sources efficiently.
+
+    Args:
+        document (Document): The document object to summarize.
+
+    Returns:
+        str: A concise summary of the document's main points.
+    """
+    return summary_chain.invoke({"content": document}).content
 
 @tool
-def getabstract(topic: str):
-    """This function finds 5 acadmic papers about the given topic and returns their summary"""
+def getabstract(topic: str, amount=5):
+    """
+    Find and summarize academic papers related to a research topic.
+
+    Use this tool when you need peer-reviewed or scholarly sources. Returns
+    summaries of the 5 most relevant academic papers found for the topic.
+
+    Args:
+        topic (str): The research topic to find academic papers for.
+        amount(int): The amount of research papers you want. Default is 5. Don't use more than 10.  
+
+    Returns:
+        list[dict]: A list of 5 papers, each containing title, authors, and summary.
+    """
     client = arxiv.Client()
+    try: 
+        search = arxiv.Search(
+            query=topic,
+            max_results=amount,
+            sort_by=arxiv.SortCriterion.Relevance  
+            
+        )
+        results = client.results(search)
 
-    search = arxiv.Search(
-        query=topic,
-        max_results=5,
-        sort_by=arxiv.SortCriterion.Relevance  
-        
-    )
-    results = client.results(search)
-
-    papers = []
-    for paper in results:
-        info = [paper.title, paper.authors, paper.summary, paper.entry_id]
-        papers.append(info)
-    
-    return papers
+        papers = []
+        for paper in results:
+            info = [paper.title, paper.authors, paper.summary, paper.entry_id]
+            papers.append(info)
+    except Exception as e:
+        return e
+    else:
+        return papers
 
 @tool
 def searchIdeas(topic:str):
-    """Given a topic, it returns a list of topics that are more Specific and less abstract. 
-        Use this when the topic you are researching is too vauge, and you want find a more specific topics"""
+    """
+    Break a broad research topic down into more specific subtopics.
+
+    Use this tool when a topic is too vague or general to research effectively.
+    Returns a list of narrower, more concrete angles to explore instead.
+
+    Args:
+        topic (str): A broad or abstract topic to narrow down.
+
+    Returns:
+        list[str]: A list of specific subtopics derived from the original topic.
+
+    Example:
+        Input:  "python"
+        Output: ["Python Programming", "Pythonidae", "Monty Python"]
+    """
     results = wiki.search(topic)
-    return results.pages.keys()
+    return list(results.pages.keys())
 
 tools = [search, content_extractor, summarizer, getabstract, searchIdeas]
 
@@ -105,6 +169,9 @@ def agent_call(state: State) -> State:
     ## Behavior
     - If the topic is too vague, use the `searchIdeas` tool to retrieve a list of more specific ideas. Choose the most appropriate and interesting one to research.
     - When searching for articles or academic papers, always use specific, targeted search queries rather than broad ones.
+    - If a tool returns a error for a parameter. Don't retry that tool with a same parameter. 
+    - The content_extractor tool will most likely return errors for certain urls, ignore those urls and try other one.
+    - If you get a 429 error, stop fetching for any more sources at the moment and create the breif with only the given summaries/abstracts. 
 
     ## Research Process
     1. Gather sources using your available tools — look up both articles and academic papers.
