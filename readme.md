@@ -2,9 +2,12 @@
 
 I built an Autonomous ReAct AI Assistant capable of retrieving articles and their summaries for topics chosen by the user. This agent's main purpose is to give people a starting point for their research by providing links to relevant articles and academic papers along with their summaries.
 
+Link to Website: [Click Here](https://huggingface.co/spaces/VakeesanM/Research-Assistant-Agent)
 ## How It Works
 
 This is an Autonomous ReAct Agent that uses its own logic to create a workflow. It uses tools bound to it to retrieve articles and academic papers, generate summaries, and finally output a research brief alongside article and academic paper URLs.
+
+![Structure of ReAct Agent](agent.png)
 
 ## Tools & Tech Stack
 
@@ -25,7 +28,7 @@ The tech stack used to build this AI Assistant consists of:
 * DuckDuckGo API
 
 ## How to Run Locally
-
+Requires OpenAI API Key
 ```bash
 git clone "https://github.com/VakeesanM/Research-AI-Agent.git"
 pip install -r requirements.txt
