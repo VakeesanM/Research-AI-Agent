@@ -8,4 +8,4 @@ arxiv
 python-dotenv
 wikipedia-api
 streamlit
- 
+beautifulsoup4 
