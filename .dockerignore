@@ -1,6 +1,7 @@
 .venv
 .gitignore
 agent.png
-app\__pycache__
 env
 readme.md
+src/agent/__pycache__
+src/tools/__pycache__

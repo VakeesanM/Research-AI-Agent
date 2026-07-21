@@ -1,10 +1,15 @@
-import streamlit as st
-from research_assistant import get_brief
 from dotenv import load_dotenv
 import os
+
 load_dotenv()
 os.getenv("OPENAI_API_KEY")
 
+import streamlit as st
+from agent.ai_agent import Agent
+
+
+if "agent" not in st.session_state:
+    st.session_state.agent = Agent()
 
 st.set_page_config(page_title="AI Research Assistant", page_icon="📝", layout="wide")
 st.header("AI Research Assistant Demo - Vakeesan M")
@@ -13,7 +18,7 @@ query = st.text_area("Enter the topic you would like to research. The more speci
 
 if st.button("Submit"):
     with st.spinner("Creating Research Brief...", show_time=True):
-        st.write(get_brief(query))
+        st.write(st.session_state.agent.get_brief(query))
 
 
 

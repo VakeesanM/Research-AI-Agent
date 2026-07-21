@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 8501
 
-CMD ["streamlit", "run", "app/app.py"]
+CMD ["streamlit", "run", "src/main.py"]
