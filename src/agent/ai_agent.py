@@ -2,7 +2,6 @@ from tools.abstract import get_abstract
 from tools.content import content_extractor
 from tools.ideas import search_ideas
 from tools.search import search
-from tools.summary import summarizer
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import ToolNode
 from agent.state import State
@@ -15,7 +14,7 @@ from langchain_core.messages import SystemMessage, HumanMessage
 
 class Agent():
     def __init__(self):
-        self.tools = [get_abstract, content_extractor, search_ideas, search, summarizer]
+        self.tools = [get_abstract, content_extractor, search_ideas, search]
         self.main_model = ChatOpenAI(model="gpt-4o-mini", streaming=True).bind_tools(tools=self.tools)
         self.agent = self.create_agent()
 
