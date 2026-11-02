@@ -43,7 +43,7 @@ The agent follows the ReAct (Reason + Act) pattern, autonomously deciding which 
 git clone https://github.com/VakeesanM/Research-AI-Agent.git
 cd Research-AI-Agent
 pip install -r requirements.txt
-streamlit run app/app.py
+streamlit run src/main.py
 ```
 
 ---
