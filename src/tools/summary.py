@@ -1,7 +1,6 @@
-from langchain_community.tools import tool
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
-
+import asyncio
 
 summary_prompt = ChatPromptTemplate([
     ("system", """You are a summarization tool within a ReAct Agent pipeline.
@@ -16,12 +15,13 @@ summary_prompt = ChatPromptTemplate([
     ("human", "Article Content:\n\n{content}")
 ])
 
+MAX_CHARS = 50_000
+sem = asyncio.Semaphore(5)
 model = ChatOpenAI(model="gpt-4o-mini")
 summary_chain = summary_prompt|model
 
 
-@tool
-def summarizer(document: str):
+async def summarizer(document: str):
     """
     Summarize the key information from a document.
 
@@ -34,4 +34,6 @@ def summarizer(document: str):
     Returns:
         str: A concise summary of the document's main points.
     """
-    return summary_chain.invoke({"content": document}).content
+    async with sem:
+        summary = await summary_chain.ainvoke({"content": document[:MAX_CHARS]})
+    return summary.content
