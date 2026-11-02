@@ -43,6 +43,7 @@ The agent follows the ReAct (Reason + Act) pattern, autonomously deciding which 
 git clone https://github.com/VakeesanM/Research-AI-Agent.git
 cd Research-AI-Agent
 pip install -r requirements.txt
+#Create Env file with OpenAI apikey
 streamlit run src/main.py
 ```
 
@@ -55,3 +56,24 @@ streamlit run src/main.py
 - **Agent searched topics too literally** — Prompted the agent to generate deeper, more targeted questions around the topic before starting research, rather than searching the raw query.
 - **Some sites blocked content extraction** — Added try/catch error handling and instructed the agent to skip URLs that returned errors instead of retrying them.
 - **Long run times** — Set a recursion limit on the agent loop, cutting runtime with no meaningful drop in result quality.
+
+## Adding Async
+
+A few months after posting this project, I learned async and added it to improve latency. Async was applied to the content extraction and summarization functions, allowing multiple URLs to be extracted and summarized in parallel.
+
+To measure the impact, I ran a small eval dataset before and after adding async. The raw results (in seconds):
+
+| Prompt | Normal Time (s) | Async Time (s) |
+|---|---|---|
+| Effects of daily Omega-3 consumption | 19.07 | 8.95 |
+| Custom loss functions in neural networks | 9.89 | 8.13 |
+| ML in networking | 15.41 | 11.52 |
+| Exercising to failure and muscle growth | 11.39 | 10.44 |
+| Quantum computers' effects on computation | 10.45 | 8.57 |
+| **Average** | **13.24** | **9.52** |
+
+### Improvement in Latency
+
+(13.24 − 9.52) / 13.24 ≈ **28.1%**
+
+Adding async reduced average latency by roughly 28%.
